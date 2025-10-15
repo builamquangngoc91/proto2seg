@@ -1,0 +1,28 @@
+# Configuration for BCSS 5-sample subset (quick testing)
+# This is a small subset with only 5 images for fast iteration
+
+# general
+seed: 42
+workers: 0
+dataset_dir: "./datasets"
+
+# train options
+batch_size: 256  # Smaller batch size for small dataset
+image_size: 128
+start_epoch: 0
+epochs: 10  # Fewer epochs for quick testing
+dataset: "bcss" 
+df_list: '../data/BCSS_128/BCSS_128_5samples.csv'
+
+# model options
+resnet: "ResNet18" 
+feature_dim: 128
+model_path: "./output/Simclr_res18_bcss_5samples/"
+reload: False
+
+# loss options
+learning_rate: 0.0003
+weight_decay: 0.
+instance_temperature: 0.5
+cluster_temperature: 1.0
+

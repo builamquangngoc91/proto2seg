@@ -20,13 +20,13 @@ image_size:
   - 128
   - 128
 start_epoch: 0
-epochs: 11  # Quick test run (10 warmup + 1 decay)
+epochs: 100  # Full training
 batch_size: 32  # Adjusted for 128x128 images
 workers: 4
 lr: 1e-3
 weight_decay: 1e-5
 
-lr_warmup_epochs: 10  # Warmup for first 10 epochs, then decay for remaining 190
+lr_warmup_epochs: 10  # Warmup for first 10 epochs
 lr_warmup_method: "linear"
 lr_warmup_decay: 0.01
 
