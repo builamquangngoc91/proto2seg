@@ -91,8 +91,24 @@ def main(args):
             image, target = image.to(device), target.to(device)
             output = model(image)
             mat.update(target.flatten(), output.argmax(1).flatten())
-        logger.info('Validation Acc_class: {:.6f}({}), Validation Dice: {:.6f}({})'.format(mat.acc(
-        ).mean().cpu().item(), mat.acc(), mat.dice().mean().cpu().item(), mat.dice().cpu().tolist()))
+        dice_scores = mat.dice()
+        iou_scores = mat.ious()
+        
+        logger.info('=' * 70)
+        logger.info('EVALUATION RESULTS')
+        logger.info('=' * 70)
+        logger.info('Test Accuracy: {:.4f} (mean) | Per-class: {}'.format(
+            mat.acc().mean().cpu().item(), 
+            [f"{i:.4f}" for i in mat.acc().cpu().tolist()]))
+        logger.info('-' * 70)
+        logger.info('Dice Score:    {:.4f} (mean) | Per-class: {}'.format(
+            dice_scores.mean().cpu().item(), 
+            [f"{i:.4f}" for i in dice_scores.cpu().tolist()]))
+        logger.info('IoU Score:     {:.4f} (mean) | Per-class: {}'.format(
+            iou_scores.mean().cpu().item(), 
+            [f"{i:.4f}" for i in iou_scores.cpu().tolist()]))
+        logger.info('=' * 70)
+        logger.info('Confusion Matrix:')
         logger.info(mat.mat)
 
 
