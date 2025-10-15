@@ -147,11 +147,11 @@ def vis(featureList, labelsList, y_pred, output_dir):
     fig = plt.figure(figsize=(14, 8))
     ax = fig.add_subplot(1, 1, 1)
     classes = gt_unique
-    lmap = {0: "Others", 1: "Tum.", 2: "Stm.", 3: "Inf.", 4: "Nec."}
+    lmap = {0: "Others", 1: "Tum.", 2: "Stm.", 3: "Inf.", 4: "Nec.", 5: "Mixed"}
     for key in classes:
         ix = np.where(v_y == key)
         ax.scatter(v_x[ix][:, 0], v_x[ix][:, 1],
-                   color=cmap(key), label=lmap[key])
+                   color=cmap(key), label=lmap.get(key, f"Class {key}"))
     ax.legend()
     plt.axis("off")
     plt.savefig(os.path.join(output_dir, 'simclr-camgt-tsne.png'))
