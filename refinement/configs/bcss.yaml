@@ -20,7 +20,7 @@ image_size:
   - 128
   - 128
 start_epoch: 0
-epochs: 200  # Reduced for smaller dataset
+epochs: 10  # Reduced for smaller dataset
 batch_size: 32  # Adjusted for 128x128 images
 workers: 4
 lr: 1e-3
