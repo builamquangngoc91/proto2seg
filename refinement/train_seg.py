@@ -258,8 +258,10 @@ def main(args):
                 else:
                     mat.update(target.flatten(), output.argmax(1).flatten())
 
-        torch.distributed.barrier()
-        torch.distributed.all_reduce(mat.mat)
+        # Synchronize metrics across processes if using distributed training
+        if args.distributed:
+            torch.distributed.barrier()
+            torch.distributed.all_reduce(mat.mat)
 
         if args.local_rank == 0:
             dice = mat.dice()
