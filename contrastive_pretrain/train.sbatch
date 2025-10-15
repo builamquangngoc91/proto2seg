@@ -11,7 +11,7 @@
 eval "$(conda shell.bash hook)"
 
 # Activate environment
-conda activate proto2seg
+conda activate protoseg
 
 # Run training
 python train.py --config config/config_bcss.yaml
