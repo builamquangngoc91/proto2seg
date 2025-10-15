@@ -58,11 +58,33 @@ class BCSS_Seg(Dataset):
             self.list_df = test_df
 
         self.length = self.list_df.shape[0]
+        
+        # Determine base directory for resolving relative paths
+        if os.path.isabs(df_list):
+            csv_dir = os.path.dirname(df_list)
+        else:
+            csv_dir = os.path.dirname(os.path.abspath(df_list))
+        # Go up from CSV location to project root (CSV is in data/BCSS_128/)
+        self.base_dir = os.path.dirname(os.path.dirname(csv_dir))
 
     def __getitem__(self, idx):
-        name = self.list_df['patch_path'][idx]
-        image_path = os.path.join(self.datadir, "image_1024_patches_roi", name)
-        annotation_path = os.path.join(self.datadir, "mask_1024_patches_5label", name)
+        # Check if using new CSV format (with full paths) or old format (just filenames)
+        patch_path = self.list_df['patch_path'][idx]
+        
+        if 'mask_path' in self.list_df.columns:
+            # New CSV format with full relative paths
+            mask_path = self.list_df['mask_path'][idx]
+            
+            # Remove leading ./ and make absolute
+            patch_path = patch_path.lstrip('./')
+            mask_path = mask_path.lstrip('./')
+            
+            image_path = os.path.join(self.base_dir, patch_path)
+            annotation_path = os.path.join(self.base_dir, mask_path)
+        else:
+            # Old CSV format with just filename
+            image_path = os.path.join(self.datadir, "image_1024_patches_roi", patch_path)
+            annotation_path = os.path.join(self.datadir, "mask_1024_patches_5label", patch_path)
 
         img = Image.open(image_path)
         msk = Image.open(annotation_path)
@@ -74,7 +96,7 @@ class BCSS_Seg(Dataset):
         img = tf.to_tensor(img)
         msk = torch.from_numpy(msk).to(dtype=torch.long)
 
-        return img, msk, target, image_path.split("/")[-1]
+        return img, msk, target, os.path.basename(image_path)
 
     def __len__(self):
         return self.length
