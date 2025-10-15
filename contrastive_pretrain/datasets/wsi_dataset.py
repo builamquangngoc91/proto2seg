@@ -13,6 +13,7 @@ import pandas as pd
 class WSIDataset(Dataset):
     def __init__(self, df_list, train=True, transform=None):
         self.list_df = pd.read_csv(df_list)
+        self.transform = transform
         self.key = ""
         if "BCSS" in df_list:
             self.key = "patch_path"
