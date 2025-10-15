@@ -7,4 +7,5 @@
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=8
 
+conda activate proto2seg
 python train.py --config config/config_bcss.yaml
