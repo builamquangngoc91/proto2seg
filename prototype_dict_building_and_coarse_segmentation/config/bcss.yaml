@@ -25,6 +25,7 @@ cluster_to_tissue_method: "top:10"
 prototype_threshold: 0.8 
 data_dir: "../data/BCSS"
 seg_df_list: '../data/BCSS/BCSS_demodata.csv' 
+seg_df_list: '../data/BCSS_128/BCSS_128.csv' 
 
 
 save_prototype_seg: True

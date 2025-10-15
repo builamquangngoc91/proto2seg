@@ -1,0 +1,41 @@
+seed: 123
+gpus: 1
+device: "cpu"  # Changed to CPU for testing
+amp: False
+
+# data
+dataset: "bcss"
+dataset_path: "../data/BCSS_128"
+split_file: "../data/BCSS_128/BCSS_128.csv"
+prototype_mask_folder: "../prototype_dict_building_and_coarse_segmentation/output"
+fully_supervised: True  # Use ground truth masks for testing (no prototypes needed)
+
+# model
+model: "linknet"
+pretrain: ""
+
+# train
+resume: False
+image_size: 
+  - 128
+  - 128
+start_epoch: 0
+epochs: 2  # Just 2 epochs for testing
+batch_size: 4  # Small batch for CPU
+workers: 2
+lr: 1e-3
+weight_decay: 1e-5
+
+lr_warmup_epochs: 1
+lr_warmup_method: "linear"
+lr_warmup_decay: 0.01
+
+
+
+# log
+print_freq: 5
+check_freq: 9999
+save_freq: 1
+output_dir: "./logs/"
+description: "bcss_cpu_test"
+

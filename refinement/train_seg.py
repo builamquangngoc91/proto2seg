@@ -30,6 +30,13 @@ def setup_seed(seed):
     torch.cuda.manual_seed_all(seed)
     np.random.seed(seed)
     random.seed(seed)
+
+
+def worker_init_fn(worker_id):
+    """Initialize worker with unique seed for reproducibility"""
+    worker_seed = torch.initial_seed() % 2**32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
@@ -112,10 +119,6 @@ def main(args):
     else:
         train_sampler = torch.utils.data.RandomSampler(dataset)
         test_sampler = torch.utils.data.SequentialSampler(dataset_test)
-
-    def worker_init_fn(worker_id):
-        random.seed(args.seed + worker_id)
-        np.random.seed(args.seed + worker_id)
 
     data_loader = torch.utils.data.DataLoader(
         dataset,
