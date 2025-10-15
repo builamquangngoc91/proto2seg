@@ -1,12 +1,12 @@
 seed: 123
-gpus: 8
+gpus: 1
 device: "cuda"
 amp: False
 
 # data
 dataset: "bcss"
-dataset_path: "../data/BCSS_128"  # Path to BCSS 128x128 dataset
-split_file: "../data/BCSS_128/BCSS_128.csv"  # CSV file with train/test split
+dataset_path: "../data/BCSS_128_5samples"  # Path to 3-image test dataset
+split_file: "../data/BCSS_128_5samples/BCSS_128_5samples.csv"  # CSV with train/test split
 prototype_mask_folder: "../prototype_dict_building_and_coarse_segmentation/output"  # Prototype output folder
 fully_supervised: False
 
@@ -20,21 +20,22 @@ image_size:
   - 128
   - 128
 start_epoch: 0
-epochs: 200  # Reduced for smaller dataset
-batch_size: 32  # Adjusted for 128x128 images
-workers: 4
+epochs: 50  # Quick testing with fewer epochs
+batch_size: 16  # Smaller batch for testing
+workers: 2
 lr: 1e-3
 weight_decay: 1e-5
 
-lr_warmup_epochs: 10
+lr_warmup_epochs: 5
 lr_warmup_method: "linear"
 lr_warmup_decay: 0.01
 
 
 
 # log
-print_freq: 10
+print_freq: 5
 check_freq: 9999
-save_freq: 50  # Save every 50 epochs
+save_freq: 10  # Save every 10 epochs for testing
 output_dir: "./logs/"
-description: "bcss_128_refinement"
+description: "bcss_5samples_refinement_test"
+
