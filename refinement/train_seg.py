@@ -175,7 +175,7 @@ def main(args):
     if args.resume:
         if args.local_rank == 0:
             logger.info("resume from %s" % (args.resume))
-        checkpoint = torch.load(args.resume, map_location=device)
+        checkpoint = torch.load(args.resume, map_location=device, weights_only=False)
         model.load_state_dict(checkpoint["model"])
         args.start_epoch = checkpoint["epoch"]
         if args.amp:

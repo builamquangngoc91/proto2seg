@@ -79,7 +79,7 @@ def main(args):
     model.to(device)
     model_path = os.path.join(args.dir, "checkpoints", "best_checkpoint.pth")
     logger.info("resume from %s" % (model_path))
-    checkpoint = torch.load(model_path, map_location=device)
+    checkpoint = torch.load(model_path, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint["model"])
 
     # train
