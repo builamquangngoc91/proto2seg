@@ -153,11 +153,19 @@ def main(args):
         warmup_iters = iters_per_epoch * args.lr_warmup_epochs
         args.lr_warmup_method = args.lr_warmup_method.lower()
         if args.lr_warmup_method == "linear":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda iter: args.lr_warmup_decay + (
-                1 - args.lr_warmup_decay) * iter / warmup_iters if iter < warmup_iters else (1 - (iter - warmup_iters) / (iters_per_epoch * (args.epochs - args.lr_warmup_epochs))) ** 0.9)
+            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
+                optimizer, 
+                lr_lambda=lambda iter: (args.lr_warmup_decay + (1 - args.lr_warmup_decay) * iter / warmup_iters) 
+                    if iter < warmup_iters 
+                    else ((1 - (iter - warmup_iters) / (iters_per_epoch * (args.epochs - args.lr_warmup_epochs))) ** 0.9)
+            )
         elif args.lr_warmup_method == "constant":
-            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda iter: args.lr_warmup_decay if iter < warmup_iters else (
-                1 - (iter - warmup_iters) / (iters_per_epoch * (args.epochs - args.lr_warmup_epochs))) ** 0.9)
+            lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
+                optimizer, 
+                lr_lambda=lambda iter: args.lr_warmup_decay 
+                    if iter < warmup_iters 
+                    else ((1 - (iter - warmup_iters) / (iters_per_epoch * (args.epochs - args.lr_warmup_epochs))) ** 0.9)
+            )
         else:
             lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
                 optimizer, lambda x: (
