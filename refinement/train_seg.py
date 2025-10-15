@@ -289,7 +289,8 @@ def load_args_and_config(add_help=True):
                         help="number of distributed processes")
     parser.add_argument("--dist-url", default="env://", type=str,
                         help="url used to set up distributed training")
-    parser.add_argument("--local_rank", default=-1, type=int)
+    parser.add_argument("--local_rank", "--local-rank", default=-1, type=int,
+                        help="local rank for distributed training")
 
     # load from cmd
     given_configs, remaining = default_config_parser.parse_known_args()
@@ -298,6 +299,10 @@ def load_args_and_config(add_help=True):
         cfg = yaml.safe_load(f)
         default_config_parser.set_defaults(**cfg)
     args = default_config_parser.parse_args()
+
+    # Read local_rank from environment if not set via argument (for torchrun compatibility)
+    if args.local_rank == -1 and 'LOCAL_RANK' in os.environ:
+        args.local_rank = int(os.environ['LOCAL_RANK'])
 
     # change arg type
     args.lr = float(args.lr)
