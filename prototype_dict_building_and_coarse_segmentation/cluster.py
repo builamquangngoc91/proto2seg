@@ -45,7 +45,7 @@ def get_patch_embeddding(dataloader, output_dir, args):
         backbone.to(device)
         model = backbone
         with torch.no_grad():
-            for i, (x, y) in enumerate(tqdm(dataloader)):
+            for i, (x, mask, y) in enumerate(tqdm(dataloader)):
                 batch_size = x.size(0)
                 x = x.to(device)
                 x = model(x)
