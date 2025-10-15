@@ -230,7 +230,7 @@ def main(args):
 
         # eval
         checkpoint = {
-            "model": model.module.state_dict() if args.gpus > 1 else model.state_dict(),
+            "model": model.module.state_dict() if args.distributed else model.state_dict(),
             "optimizer": optimizer.state_dict(),
             "lr_scheduler": lr_scheduler.state_dict(),
             "epoch": epoch,
