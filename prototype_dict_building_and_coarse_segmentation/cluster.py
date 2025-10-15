@@ -40,7 +40,7 @@ def get_patch_embeddding(dataloader, output_dir, args):
         model_.load_state_dict(torch.load(
             args.model_path, map_location=device.type)['net'])
         model_.eval()
-        backbone = model.resnet
+        backbone = model_.resnet
         model_.to(device)
         backbone.to(device)
         model = backbone
