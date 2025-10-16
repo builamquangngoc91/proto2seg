@@ -21,7 +21,9 @@ def cluster_query(feature_map, centroid, mapkey, n_cluster, device):
     _, c, h, w = feature_map.size()
     # cluster and query
     embeddings = feature_map.cpu().numpy().transpose(0, 2, 3, 1).reshape(-1, c)
-    estimator = KMeans(n_clusters=n_cluster, init='k-means++')
+    # Ensure n_clusters doesn't exceed n_samples
+    n_cluster = min(n_cluster, embeddings.shape[0])
+    estimator = KMeans(n_clusters=n_cluster, init='k-means++', n_init=10)
     estimator.fit(embeddings)
     cluster_pred = estimator.labels_
     cluster_centroid = estimator.cluster_centers_
