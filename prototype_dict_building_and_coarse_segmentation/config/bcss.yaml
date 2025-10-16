@@ -19,13 +19,13 @@ reload: False
 
 prototype_image_size: 128
 seg_image_size: 128  # Changed from 1024 to match 128x128 patches
-df_list: './../data/BCSS_128/BCSS_128.csv' # 128x128 patch list file path 
+df_list: '../data/BCSS_128/BCSS_128.csv' # 128x128 patch list file path 
 n_cluster: 30
 cluster_to_tissue_method: "top:10" 
 prototype_threshold: 0.8 
-data_dir: "./../data/BCSS"
-seg_df_list: './../data/BCSS/BCSS_demodata.csv' 
-seg_df_list: './../data/BCSS_128/BCSS_128.csv' 
+data_dir: "../data/BCSS"
+seg_df_list: '../data/BCSS/BCSS_demodata.csv' 
+seg_df_list: '../data/BCSS_128/BCSS_128.csv' 
 
 
 save_prototype_seg: True
