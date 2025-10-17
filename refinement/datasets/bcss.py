@@ -114,23 +114,55 @@ class BCSSDataset(data.Dataset):
     def load_samples(self,):
         with open(self.split_file) as f:
             csv_reader = csv.reader(f)
+            header = next(csv_reader, None)  # Skip header if present
+            
             for row in csv_reader:
-                name, split = row
-                if (self.train and split == "train") or (not self.train and split == "test"):
+                if len(row) == 0:
+                    continue
+                    
+                # Handle both old format (name, split) and new format (patch_path, mask_path, split, ...)
+                if len(row) >= 3:
+                    # New CSV format: patch_path, mask_path, split, ...
+                    patch_path, mask_path, split = row[0], row[1], row[2]
+                    
+                    # Remove leading ./ if present
+                    patch_path = patch_path.lstrip('./')
+                    mask_path = mask_path.lstrip('./')
+                    
+                    # Build full paths
+                    image_path = os.path.join(self.dataset_path, patch_path)
+                    
                     if self.return_gt:
-                        self.dataset_samples.append([
-                            os.path.join(self.dataset_path,
-                                         self.image_folder, name),
-                            os.path.join(self.dataset_path,
-                                         self.gt_mask_folder, name)
-                        ])
+                        annotation_path = os.path.join(self.dataset_path, mask_path)
                     else:
-                        self.dataset_samples.append([
-                            os.path.join(self.dataset_path,
-                                         self.image_folder, name),
-                            os.path.join(self.dataset_path,
-                                         self.prototype_mask_folder, name)
-                        ])
+                        # Use prototype mask if available
+                        if self.prototype_mask_folder:
+                            # Extract just the filename from patch_path
+                            filename = os.path.basename(patch_path)
+                            annotation_path = os.path.join(self.prototype_mask_folder, filename)
+                        else:
+                            annotation_path = os.path.join(self.dataset_path, mask_path)
+                    
+                    if (self.train and split == "train") or (not self.train and split == "test"):
+                        self.dataset_samples.append([image_path, annotation_path])
+                else:
+                    # Old format: name, split
+                    name, split = row[0], row[1]
+                    if (self.train and split == "train") or (not self.train and split == "test"):
+                        if self.return_gt:
+                            self.dataset_samples.append([
+                                os.path.join(self.dataset_path,
+                                             self.image_folder, name),
+                                os.path.join(self.dataset_path,
+                                             self.gt_mask_folder, name)
+                            ])
+                        else:
+                            self.dataset_samples.append([
+                                os.path.join(self.dataset_path,
+                                             self.image_folder, name),
+                                os.path.join(self.dataset_path,
+                                             self.prototype_mask_folder, name)
+                            ])
 
     def __len__(self,):
         return len(self.dataset_samples)
