@@ -7,3 +7,4 @@ from .camelyon import CamelyonDataset
 
 __all__ = ['BCSSDataset', 'CamelyonDataset']
 
+
