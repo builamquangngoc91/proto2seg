@@ -105,64 +105,32 @@ class BCSSDataset(data.Dataset):
         self.split_file = split_file
         self.dataset_path = dataset_path
         self.return_gt = return_gt
+        self.image_folder = "image_1024_patches_roi"
+        self.gt_mask_folder = "mask_1024_patches_5label"
         self.prototype_mask_folder = prototype_mask_folder
         self.dataset_samples = []
-        
-        # Determine base directory for resolving relative paths
-        if os.path.isabs(split_file):
-            csv_dir = os.path.dirname(split_file)
-        else:
-            csv_dir = os.path.dirname(os.path.abspath(split_file))
-        # Go up from CSV location to project root (CSV is in data/BCSS_128/)
-        self.base_dir = os.path.dirname(os.path.dirname(csv_dir))
-        
         self.load_samples()
 
     def load_samples(self,):
         with open(self.split_file) as f:
             csv_reader = csv.reader(f)
-            header = next(csv_reader)  # Skip header if present
-            
             for row in csv_reader:
-                # Handle both old format (name, split) and new format (patch_path, mask_path, split, ...)
-                if len(row) >= 3:
-                    # New CSV format: patch_path, mask_path, split, original_image, x, y
-                    patch_path, mask_path, split = row[0], row[1], row[2]
-                    
-                    # Remove leading ./ and make paths absolute
-                    patch_path = patch_path.lstrip('./')
-                    mask_path = mask_path.lstrip('./')
-                    
-                    # Build full paths
-                    image_path = os.path.join(self.base_dir, patch_path)
-                    
+                name, split = row
+                if (self.train and split == "train") or (not self.train and split == "test"):
                     if self.return_gt:
-                        annotation_path = os.path.join(self.base_dir, mask_path)
+                        self.dataset_samples.append([
+                            os.path.join(self.dataset_path,
+                                         self.image_folder, name),
+                            os.path.join(self.dataset_path,
+                                         self.gt_mask_folder, name)
+                        ])
                     else:
-                        # Use prototype mask if available
-                        if self.prototype_mask_folder:
-                            # Extract just the filename
-                            filename = os.path.basename(patch_path)
-                            annotation_path = os.path.join(self.prototype_mask_folder, filename)
-                        else:
-                            annotation_path = os.path.join(self.base_dir, mask_path)
-                    
-                    if (self.train and split == "train") or (not self.train and split == "test"):
-                        self.dataset_samples.append([image_path, annotation_path])
-                else:
-                    # Old format: name, split
-                    name, split = row[0], row[1]
-                    if (self.train and split == "train") or (not self.train and split == "test"):
-                        if self.return_gt:
-                            self.dataset_samples.append([
-                                os.path.join(self.dataset_path, "image_1024_patches_roi", name),
-                                os.path.join(self.dataset_path, "mask_1024_patches_5label", name)
-                            ])
-                        else:
-                            self.dataset_samples.append([
-                                os.path.join(self.dataset_path, "image_1024_patches_roi", name),
-                                os.path.join(self.dataset_path, self.prototype_mask_folder, name)
-                            ])
+                        self.dataset_samples.append([
+                            os.path.join(self.dataset_path,
+                                         self.image_folder, name),
+                            os.path.join(self.dataset_path,
+                                         self.prototype_mask_folder, name)
+                        ])
 
     def __len__(self,):
         return len(self.dataset_samples)
@@ -184,6 +152,14 @@ class BCSSDataset(data.Dataset):
 
         img = tf.to_tensor(img)
         msk = np.array(msk)
+        
+        # Validate mask values: should be in [0, num_classes-1] or 255 (ignore index)
+        # Clamp any invalid values to prevent CUDA assertion errors
+        invalid_mask = (msk >= self.num_classes) & (msk != 255)
+        if invalid_mask.any():
+            # Set invalid values to ignore_index
+            msk[invalid_mask] = 255
+        
         msk = torch.from_numpy(msk).to(dtype=torch.long)
 
         return img, msk
