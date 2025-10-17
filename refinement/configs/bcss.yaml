@@ -7,7 +7,7 @@ amp: False
 dataset: "bcss"
 dataset_path: "./../data/BCSS_128"  # Path to BCSS 128x128 dataset
 split_file: "./../data/BCSS_128/BCSS_128.csv"  # CSV file with train/test split
-prototype_mask_folder: "./../prototype_dict_building_and_coarse_segmentation/output/bcss_30_top:10_0.8_CQ5"  # CQ5 = Cluster Query with n=5 (best quality)
+prototype_mask_folder: "./bcss_30_top:10_0.8_CQ5"  # CQ5 = Cluster Query with n=5 (best quality)
 fully_supervised: False
 
 # model
