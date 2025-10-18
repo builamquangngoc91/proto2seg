@@ -22,7 +22,7 @@ seg_image_size: 128  # Changed from 1024 to match 128x128 patches
 df_list: '../data/BCSS_128/BCSS_128.csv' # 128x128 patch list file path 
 n_cluster: 30
 cluster_to_tissue_method: "top:10" 
-prototype_threshold: 0.8 
+prototype_threshold: 0.5  # Lowered from 0.8 to include classes 0 and 3 
 data_dir: "../data/BCSS"
 seg_df_list: '../data/BCSS/BCSS_demodata.csv' 
 seg_df_list: '../data/BCSS_128/BCSS_128.csv' 

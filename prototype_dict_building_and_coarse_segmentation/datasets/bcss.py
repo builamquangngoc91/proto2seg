@@ -58,7 +58,8 @@ class BCSS(Dataset):
         
         target = np.array([(msk_fin == i).sum() for i in range(5)])
         target = target / target.sum()
-        label = np.argmax(target) if target.max() > 0.8 else 5
+        # Changed from 0.8 to 0.5 to include more patches with classes 0 and 3
+        label = np.argmax(target) if target.max() > 0.5 else 5
         # label = np.argmax(target)
 
         if self.transform is not None:
