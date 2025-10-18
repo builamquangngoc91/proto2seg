@@ -37,6 +37,9 @@ class Evaluator(object):
         return FWIoU
 
     def _generate_matrix(self, gt_image, pre_image):
+        # Clip predictions to valid range [0, num_class-1] to handle edge cases
+        pre_image = np.clip(pre_image, 0, self.num_class - 1)
+        
         mask = (gt_image >= 0) & (gt_image < self.num_class)
         label = self.num_class * gt_image[mask].astype('int') + pre_image[mask]
         count = np.bincount(label, minlength=self.num_class**2)

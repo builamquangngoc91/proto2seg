@@ -116,6 +116,21 @@ def cluster(featureList, labelsList, n_clusters, cluster_to_tissue_method, proto
     if len(delete_idx) > 0:
         y_centroid = np.delete(y_centroid, delete_idx, 0)
         maplist = np.delete(maplist, delete_idx)
+    
+    # Filter out class 5 (mixed class) - it's not a valid class for segmentation
+    # Remap class 5 to class 0 (background) or delete those prototypes
+    class_5_mask = (maplist == 5)
+    if class_5_mask.any():
+        logger.info(f"Found {class_5_mask.sum()} prototypes mapped to class 5 (mixed). Remapping to class 0 (background)")
+        maplist[class_5_mask] = 0  # Remap class 5 to background
+        # Alternatively, delete them:
+        # y_centroid = y_centroid[~class_5_mask]
+        # maplist = maplist[~class_5_mask]
+    
+    # Ensure all classes are in valid range [0, 4]
+    assert np.all((maplist >= 0) & (maplist <= 4)), f"Invalid classes in maplist: {np.unique(maplist)}"
+    logger.info(f"Final prototype classes: {np.unique(maplist)} with counts: {[(i, (maplist==i).sum()) for i in np.unique(maplist)]}")
+    
     np.save(os.path.join(output_dir, "mapkeymat.npy"), np.array(maplist))
     nmi, ari, f, acc = evaluation.evaluate(
         np.array(labelsList).ravel(), np.array(f_pred).ravel())
